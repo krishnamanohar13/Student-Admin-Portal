@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5 mb-4">Admin Dashboard</h1>
+
+        <!-- Search Bar -->
+        <div class="form-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by Name">
+        </div>
+
+        <!-- Add link to download CSV -->
+        <a href="{{ url_for('download_csv') }}" class="btn btn-primary mb-3">Download CSV</a>
+        
+        <!-- Link to registration form -->
+        <a href="{{ url_for('registration') }}" class="btn btn-success mb-3">Go to Registration Form</a>
+        
+        <!-- Student Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Course</th>
+                        <th>Payment Status</th>
+                        <th colspan="2" class="text-center">Actions</th> <!-- New column for action buttons -->
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.email }}</td>
+                            <td>{{ student.mobile }}</td>
+                            <td>{{ student.course }}</td>
+                            <td>{{ student.payment_status }}</td>
+                            <td class="text-center">
+                                <!-- Form to delete student -->
+                                <form action="{{ url_for('delete_student', student_id=student.id) }}" method="post">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
+                            <td class="text-center">
+                                <!-- Link to edit student -->
+                                <a href="{{ url_for('edit_student', student_id=student.id) }}" class="btn btn-primary">Edit</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- End of Student Table -->
+    </div>
+
+    <!-- JavaScript for filtering table rows -->
+    <script>
+        document.getElementById('searchInput').addEventListener('keyup', function(event) {
+            var searchText = event.target.value.toLowerCase();
+            var tableBody = document.getElementById('tableBody');
+            var rows = tableBody.getElementsByTagName('tr');
+            Array.from(rows).forEach(function(row) {
+                var name = row.getElementsByTagName('td')[0].textContent.toLowerCase();
+                if (name.includes(searchText)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
